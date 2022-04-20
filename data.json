@@ -1,0 +1,24 @@
+{
+  "games": [
+    {
+      "id": 0,
+      "player1": {
+        "enemyBoard": [
+          {"placeholder":"dont remove"}
+        ],
+        "nickname": "Player 1",
+        "yourBoard": [
+        ]
+      },
+      "player1Turn": true,
+      "player2": {
+        "enemyBoard": [
+          {"placeholder":"dont remove"}
+        ],
+        "nickname": "Player 2",
+        "yourBoard": [
+        ]
+      }
+    }
+  ]
+}
