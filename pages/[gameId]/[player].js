@@ -21,7 +21,6 @@ const Game = () => {
   const [player1Turn, setPlayer1Turn] = useState(0)
   async function getGameData() {
    const fetchDateUrl = ({ gameId }) => `https://ships-game-f181d-default-rtdb.europe-west1.firebasedatabase.app/games/${gameId}.json`;
-      console.log(fetchDateUrl({date:gameId}))
       try {
      await axios.get(fetchDateUrl({gameId: gameId})).then(value => ((setGameData(value.data)),setPlayer1Turn(value.data.player1Turn)))
     //  await axios.get(

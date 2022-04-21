@@ -25,6 +25,7 @@ const Board = ({ data, player1Turn, setPlayer1Turn, player, gameId }) => {
     temp.push({ id: i, hit: false });
   }
   const [boardItems, setBoardItems] = useState(temp);
+
   const handleShot = (id) => {
     if (player ==='player1' ? player1Turn : !player1Turn) {
       if (
@@ -33,19 +34,19 @@ const Board = ({ data, player1Turn, setPlayer1Turn, player, gameId }) => {
         ).length === 0
       ) {
         setPlayer1Turn(player === "player1" ? false : true);
+        const fetchPlayer1Turn = ({gameId}) => `https://ships-game-f181d-default-rtdb.europe-west1.firebasedatabase.app/games/${gameId}.json`;
         axios.patch(
-          "https://ships-game-f181d-default-rtdb.europe-west1.firebasedatabase.app/games/0.json",
+          fetchPlayer1Turn({gameId: gameId}),
           { player1Turn: player === "player1" ? false : true }
         );
         const newBoardItems = [...boardItems];
         const enemyShips = Object.values(
           data[`${player === "player1" ? "player2" : "player1"}`].yourBoard
         );
-        console.log(enemyShips);
+        const fetchDateUrl = ({data,gameId}) => `https://ships-game-f181d-default-rtdb.europe-west1.firebasedatabase.app/games/${gameId}/${data}/enemyBoard.json`;
         if (enemyShips.filter((el) => el.position === id).length > 0) {
-          const fetchDateUrl = ({data}) => `https://ships-game-f181d-default-rtdb.europe-west1.firebasedatabase.app/games/0/${data}/enemyBoard.json`;
           newBoardItems[id].hit = true;
-         axios.post(fetchDateUrl({date: player}), { position: id, ship: true, shot: false })
+         axios.post(fetchDateUrl({date: player,gameId:gameId}), { position: id, ship: true, shot: false })
         } else {
           newBoardItems[id].shot = true;
           axios.post(fetchDateUrl({date: player}), { position: id, ship: false, shot: true })

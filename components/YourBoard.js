@@ -30,12 +30,11 @@ const YourBoard = ({ data, player, gameId }) => {
   const [boardItems, setBoardItems] = useState(temp)
   const handleAddShip = (id) => {
     const yourBoard = Object.values(data[`${player}`].yourBoard).slice(1);
-    console.log(yourBoard)
     if (yourBoard.filter(el => el.position === id).length === 0) {
       const newBoardItems = [...boardItems]    
-      const fetchDateUrl = ({player}) => `https://ships-game-f181d-default-rtdb.europe-west1.firebasedatabase.app/games/0/${player}/yourBoard.json`;
+      const fetchDateUrl = ({player,gameId}) => `https://ships-game-f181d-default-rtdb.europe-west1.firebasedatabase.app/games/${gameId}/${player}/yourBoard.json`;
       newBoardItems[id].ship = true
-      axios.post(fetchDateUrl({player: player}), { "position": id, "ship": true, "hit": false })
+      axios.post(fetchDateUrl({player: player,gameId:gameId}), { "position": id, "ship": true, "hit": false })
         setBoardItems(newBoardItems)
     }
   }
