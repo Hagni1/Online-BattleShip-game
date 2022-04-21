@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import EnemyBoard from "../../components/EnemyBoard";
 import YourBoard from "../../components/YourBoard";
+import PrepareGame from "../../components/PrepareGame";
 
 const Container = styled.div`
   width: 80%;
@@ -19,34 +20,30 @@ const Game = () => {
   const routerIsReady = useRouter().isReady  
   const [gameData, setGameData] = useState(0);
   const [player1Turn, setPlayer1Turn] = useState(0)
+  const [playerReady, setPlayerReady] = useState(false)
+  
   async function getGameData() {
+    console.log(gameId)
    const fetchDateUrl = ({ gameId }) => `https://ships-game-f181d-default-rtdb.europe-west1.firebasedatabase.app/games/${gameId}.json`;
       try {
-     await axios.get(fetchDateUrl({gameId: gameId})).then(value => ((setGameData(value.data)),setPlayer1Turn(value.data.player1Turn)))
-    //  await axios.get(
-    //    `https://ships-game-f181d-default-rtdb.europe-west1.firebasedatabase.app/games.json`
-    //   //  `https://ships-game-f181d-default-rtdb.europe-west1.firebasedatabase.app/games/${gameId}.json`//not working !
-    //  ).then(value => ((setGameData(value.data[gameId*1])),setPlayer1Turn(value.data[gameId*1].player1Turn)))
-     
+     await axios.get(fetchDateUrl({gameId: gameId})).then(value => ((setGameData(value.data)),setPlayer1Turn(value.data.player1Turn)))  
    } catch (error) {
      console.error(error);
     }
-    
   }
 
   useEffect(() => {
-    getGameData()
-    const interval = setInterval(() => {
+    gameId && getGameData()
+    const interval = playerReady && setInterval(() => {
       getGameData()
     }, 5000);
     return () => clearInterval(interval);
-  },[routerIsReady])
-  
+  },[routerIsReady,playerReady])
   return (
     <Container>
       <span>
     <h2>Enemy Board</h2>
-       {gameData && <EnemyBoard data={gameData} player1Turn={player1Turn} setPlayer1Turn={setPlayer1Turn} player={player} gameId={gameId}/>} 
+        {gameData && playerReady ? <EnemyBoard data={gameData} player1Turn={player1Turn} setPlayer1Turn={setPlayer1Turn} player={player} gameId={gameId} /> : <PrepareGame />}
       </span>
       {gameData && <span>
         {player1Turn ? 'player 1 ' : 'player 2'} turn<br/>
