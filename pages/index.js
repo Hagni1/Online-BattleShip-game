@@ -1,12 +1,8 @@
-import Head from "next/head";
-import Image from "next/image";
 import styled from "styled-components";
-import axios from "axios";
 import { useState, } from "react";
 import { useRouter } from "next/router";
 import { app } from './../firebase.tsx'
-import { getDatabase, ref, set } from "firebase/database";
-// import { getFirestore, ref, getDatabase} from 'firebase/firestore/lite';
+import { getDatabase, ref, set, onValue } from "firebase/database";
 const InputNumber = styled.input`
   width:5vw;
   border: 3px solid black;
@@ -43,45 +39,64 @@ const InputNumber = styled.input`
 
 
 export default function Home() {
+  const db = getDatabase();
   const router = useRouter();
   const [data, setData] = useState(0)
   const [inputValue, setInputValue]= useState(0)
-
-  const handleJoinGame = () => {
-    
-  }
   function handleCreateNewGame() {
     const newGameTemplate= {
       "player1": {
-        "enemyBoard": [
-          {"placeholder":"dont remove"}
-        ],
+        "ships": {
+          "0": { "name": "Battleship ", "size": [1, 2, 3, 4], "shipId": 0, "vertical": true },
+          "1": { "name": "Cruiser", "size": [1, 2, 3], "shipId": 1, "vertical": true },
+          "2": { "name": "Cruiser", "size": [1, 2, 3], "shipId": 2, "vertical": true },
+          "3": { "name": "Submarine ", "size": [1, 2], "shipId": 3, "vertical": true },
+          "4": { "name": "Submarine ", "size": [1, 2], "shipId": 4, "vertical": true },
+          "5": { "name": "Destroyer  ", "size": [1], "shipId": 5, "vertical": true },
+          "6": { "name": "Destroyer  ", "size": [1], "shipId": 6, "vertical": true },
+          "7": { "name": "Destroyer  ", "size": [1], "shipId": 7, "vertical": true },
+        },
+        "enemyBoard": {
+          "-1":{"placeholder":"dont remove"},
+        },
         "nickname": "Player 1",
-        "yourBoard": [
-          {"placeholder":"dont remove"},
-        ]
+        "yourBoard": {
+          "-1":{"placeholder":"dont remove"},
+        }
+        
       },
       "id": data.length,
       "player1Turn": true,
-        "player2": {
-          "enemyBoard": [
-            { "placeholder": "dont remove" }
-          ],
+      "player2": {
+        "ships": {
+          "0": { "name": "Battleship ", "size": [1, 2, 3, 4], "shipId": 0, "vertical": true },
+          "1": { "name": "Cruiser", "size": [1, 2, 3], "shipId": 1, "vertical": true },
+          "2": { "name": "Cruiser", "size": [1, 2, 3], "shipId": 2, "vertical": true },
+          "3": { "name": "Submarine ", "size": [1, 2], "shipId": 3, "vertical": true },
+          "4": { "name": "Submarine ", "size": [1, 2], "shipId": 4, "vertical": true },
+          "5": { "name": "Destroyer  ", "size": [1], "shipId": 5, "vertical": true },
+          "6": { "name": "Destroyer  ", "size": [1], "shipId": 6, "vertical": true },
+          "7": { "name": "Destroyer  ", "size": [1], "shipId": 7, "vertical": true },
+        },
+          "enemyBoard": {
+            "-1":{"placeholder":"dont remove"},
+          },
           "nickname": "Player 2",
-          "yourBoard": [
-            {"placeholder":"dont remove"},
-          ]
+          "yourBoard": {
+            "-1":{"placeholder":"dont remove"},
+          }
         } }
-    const db = getDatabase();
     data && set(ref(db, 'games/' + Object.keys(data).length), {...newGameTemplate});
     router.push(`/${Object.values(data).length}/player1`)
   }
   
 
   const getData = () => {
-    axios.get(
-      `https://ships-game-f181d-default-rtdb.europe-west1.firebasedatabase.app/games.json`)
-      .then(value => setData(value.data))
+    const gamesRef = ref(db,`games/`)
+    onValue(gamesRef, (snapshot) => {
+      const data = snapshot.val();
+      setData(data);
+    });
   }
   
   data === 0 && getData()
@@ -93,7 +108,7 @@ export default function Home() {
         <label>
           <p>
           Enter game number:
-            <InputNumber value={inputValue} type="number" onChange={(e) => setInputValue(e.target.value)} max={Object.values(data).length} min={0} />
+            <InputNumber value={inputValue} type="number" onChange={(e) => setInputValue(e.target.value)} max={Object.values(data).length-1} min={0} />
           </p>
           <Button onClick={()=> router.push(`/${inputValue}/player2`)}>Join an existing game</Button>
         </label>

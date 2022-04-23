@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
+import { ref, set } from "firebase/database";
 const BoardItem = styled.div`
   font-size: 50px;
   line-height: 50px;
@@ -19,7 +20,7 @@ const BoardContainer = styled.div`
   flex-wrap: wrap;
   background-color: white;
 `;
-const Board = ({ data, player1Turn, setPlayer1Turn, player, gameId }) => {
+const Board = ({ data, player1Turn, setPlayer1Turn, player, gameId ,db}) => {
   const temp = [];
   for (let i = 0; i < 100; i++) {
     temp.push({ id: i, hit: false });
@@ -27,29 +28,34 @@ const Board = ({ data, player1Turn, setPlayer1Turn, player, gameId }) => {
   const [boardItems, setBoardItems] = useState(temp);
 
   const handleShot = (id) => {
-    if (player ==='player1' ? player1Turn : !player1Turn) {
+    if (player === "player1" ? player1Turn : !player1Turn) {
       if (
         Object.values(data[`${player}`].enemyBoard).filter(
           (el) => el.position === id
         ).length === 0
       ) {
         setPlayer1Turn(player === "player1" ? false : true);
-        const fetchPlayer1Turn = ({gameId}) => `https://ships-game-f181d-default-rtdb.europe-west1.firebasedatabase.app/games/${gameId}.json`;
-        axios.patch(
-          fetchPlayer1Turn({gameId: gameId}),
-          { player1Turn: player === "player1" ? false : true }
-        );
+        set(ref(db, `games/${gameId}/player1Turn`), (player === "player1" ? false : true))
         const newBoardItems = [...boardItems];
         const enemyShips = Object.values(
           data[`${player === "player1" ? "player2" : "player1"}`].yourBoard
         );
-        const fetchDateUrl = ({data,gameId}) => `https://ships-game-f181d-default-rtdb.europe-west1.firebasedatabase.app/games/${gameId}/${data}/enemyBoard.json`;
+        const fetchDateUrl = ({ data, gameId }) =>
+          `https://ships-game-f181d-default-rtdb.europe-west1.firebasedatabase.app/games/${gameId}/${data}/enemyBoard.json`;
         if (enemyShips.filter((el) => el.position === id).length > 0) {
           newBoardItems[id].hit = true;
-         axios.post(fetchDateUrl({date: player,gameId:gameId}), { position: id, ship: true, shot: false })
+          set(ref(db, `games/${gameId}/${player}/enemyBoard/${id}`), {
+            position: id,
+            ship: true,
+            shot: false,
+          })
         } else {
           newBoardItems[id].shot = true;
-          axios.post(fetchDateUrl({date: player}), { position: id, ship: false, shot: true })
+          set(ref(db, `games/${gameId}/${player}/enemyBoard/${id}`), {
+            position: id,
+            ship: false,
+            shot: true,
+          })
         }
         setBoardItems(newBoardItems);
       }
@@ -63,19 +69,22 @@ const Board = ({ data, player1Turn, setPlayer1Turn, player, gameId }) => {
   }, [data]);
 
   return (
-    <BoardContainer>
-      {boardItems.map((item) => (
-        <BoardItem
-          key={item.id}
-          hit={item.hit}
-          shot={item.shot}
-          id={item.id}
-          onClick={() => handleShot(item.id)}
-        >
-          {item.shot && <span>O</span>}
-        </BoardItem>
-      ))}
-    </BoardContainer>
+    <>
+      <h2>Enemy Board</h2>
+      <BoardContainer>
+        {boardItems.map((item) => (
+          <BoardItem
+            key={item.id}
+            hit={item.hit}
+            shot={item.shot}
+            id={item.id}
+            onClick={() => handleShot(item.id)}
+          >
+            {item.shot && <span>O</span>}
+          </BoardItem>
+        ))}
+      </BoardContainer>
+    </>
   );
 };
 
