@@ -19,8 +19,8 @@ const BoardItem = styled.div`
   background-color: ${(props) => (props.hit ? "red" : "")};
   
   &:hover{
-    border:${props => (props.active && !props.shot && !props.hit) && "4px solid green" };
-    cursor:${props => (props.active && !props.shot && !props.hit) ? 'pointer': 'default '};
+    border:${props => (props.isGameReady && props.active && !props.shot && !props.hit) && "4px solid green" };
+    cursor:${props => (props.isGameReady && props.active && !props.shot && !props.hit) ? 'pointer': 'default '};
   }
 `;
 const BoardContainer = styled.div`
@@ -36,9 +36,10 @@ const Board = ({ data, player1Turn, setPlayer1Turn, player, gameId ,db}) => {
     temp.push({ id: i, hit: false });
   }
   const [boardItems, setBoardItems] = useState(temp);
+  const checkIfGameIsReady = data.player2.isReady && data.player1.isReady;
 
   const handleShot = (id) => {
-    if (player === "player1" ? player1Turn : !player1Turn) {
+    if ((player === "player1" ? player1Turn : !player1Turn)&& data.player1.isReady && data.player2.isReady) {
       if (
         Object.values(data[`${player}`].enemyBoard).filter(
           (el) => el.position === id
@@ -88,6 +89,7 @@ const Board = ({ data, player1Turn, setPlayer1Turn, player, gameId ,db}) => {
             shot={item.shot}
             id={item.id}
             onClick={() => handleShot(item.id)}
+            isGameReady={checkIfGameIsReady }
           >
             {item.shot && <span>O</span>}
           </BoardItem>

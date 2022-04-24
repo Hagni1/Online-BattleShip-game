@@ -46,6 +46,7 @@ export default function Home() {
   function handleCreateNewGame() {
     const newGameTemplate= {
       "player1": {
+        "isReady": false,
         "ships": {
           "0": { "name": "Battleship ", "size": [1, 2, 3, 4], "shipId": 0, "vertical": true },
           "1": { "name": "Cruiser", "size": [1, 2, 3], "shipId": 1, "vertical": true },
@@ -81,13 +82,17 @@ export default function Home() {
           "enemyBoard": {
             "-1":{"placeholder":"dont remove"},
           },
-          "nickname": "Player 2",
+        "nickname": "Player 2",
+        "isReady": false,
           "yourBoard": {
             "-1":{"placeholder":"dont remove"},
           }
-        } }
-    data && set(ref(db, 'games/' + Object.keys(data).length), {...newGameTemplate});
-    router.push(`/${Object.values(data).length}/player1`)
+      }
+    }
+   
+      data && set(ref(db, 'games/' + Object.keys(data).length), {...newGameTemplate}),
+      router.push(`/${Object.values(data).length}/player1`)
+    
   }
   
 
@@ -101,7 +106,6 @@ export default function Home() {
 
   const options = []
   Object.values(data).filter(item => item.Winner ? false : true).map(game => options.push({ value:game.id, label:game.id }))
-  // const options=(Object.values(data).filter(item=> item.Winner ? false:true)).map(game=> <option key={game.id}>{game.id}</option>)
   data === 0 && getData()
   return (
     <Container>
@@ -113,7 +117,7 @@ export default function Home() {
           Select available games:
             <Select options={options} onChange={option => setInputValue(option.value)}/>
           </p>
-          <Button onClick={()=> router.push(`/${inputValue}/player2`)}>Join selected game</Button>
+          <Button onClick={()=>  inputValue !==0 && router.push(`/${inputValue}/player2`)}>Join selected game</Button>
         </label>
       </ButtonGroup>
     </Container>

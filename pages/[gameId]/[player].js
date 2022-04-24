@@ -93,12 +93,13 @@ const Game = () => {
        {gameData && (
         <span>
           <h1>You are {player}</h1>
-          {player ==='player1' && <h3>invite friend by giving him link :  ... Or join by home page selecting {gameId} in game number field</h3>}
+          {player ==='player1' && <h3>Invite friend by home page selecting {gameId} in game number field</h3>}
         </span>
       )}
+      {gameData && (
       <BoardsContainer
       playerReady={playerReady}
-      active={player === 'player1' ? (player1Turn ? true : false) : (player1Turn ? false : true)}>
+      active={gameData.player2.isReady && gameData.player1.isReady &&  player === 'player1' ? (player1Turn ? true : false) : (player1Turn ? false : true)}>
         {gameData &&
           (playerReady ? (
             <EnemyBoard
@@ -116,6 +117,10 @@ const Game = () => {
               setDraggedShip={setDraggedShip}
               setPlayerReady={setPlayerReady}
               ships={ships}
+              db={db}
+                player={player}
+                playerReady={playerReady}
+              gameId={gameId}
             />
           ))}
         {gameData && (
@@ -130,6 +135,7 @@ const Game = () => {
           />
         )}
       </BoardsContainer>
+      )}
       {winner && (
         <Winner>
           <h1>THE WINNER IS {winner}!</h1>
