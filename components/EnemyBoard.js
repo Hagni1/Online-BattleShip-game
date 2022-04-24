@@ -1,17 +1,27 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import axios from "axios";
 import { ref, set } from "firebase/database";
+const BoardWrapper = styled.div`
+
+`
 const BoardItem = styled.div`
   font-size: 50px;
   line-height: 50px;
   text-align: center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   color: black;
   width: 50px;
   height: 50px;
   box-sizing: border-box;
-  border: 2px solid black;
+  border: 1px solid black;
   background-color: ${(props) => (props.hit ? "red" : "")};
+  
+  &:hover{
+    border:${props => (props.active && !props.shot && !props.hit) && "4px solid green" };
+    cursor:${props => (props.active && !props.shot && !props.hit) ? 'pointer': 'default '};
+  }
 `;
 const BoardContainer = styled.div`
   width: 510px;
@@ -40,8 +50,6 @@ const Board = ({ data, player1Turn, setPlayer1Turn, player, gameId ,db}) => {
         const enemyShips = Object.values(
           data[`${player === "player1" ? "player2" : "player1"}`].yourBoard
         );
-        const fetchDateUrl = ({ data, gameId }) =>
-          `https://ships-game-f181d-default-rtdb.europe-west1.firebasedatabase.app/games/${gameId}/${data}/enemyBoard.json`;
         if (enemyShips.filter((el) => el.position === id).length > 0) {
           newBoardItems[id].hit = true;
           set(ref(db, `games/${gameId}/${player}/enemyBoard/${id}`), {
@@ -69,11 +77,12 @@ const Board = ({ data, player1Turn, setPlayer1Turn, player, gameId ,db}) => {
   }, [data]);
 
   return (
-    <>
+    <BoardWrapper>
       <h2>Enemy Board</h2>
       <BoardContainer>
         {boardItems.map((item) => (
           <BoardItem
+            active={player === 'player1' ? (player1Turn ? true : false) : (player1Turn ? false : true)}
             key={item.id}
             hit={item.hit}
             shot={item.shot}
@@ -84,7 +93,7 @@ const Board = ({ data, player1Turn, setPlayer1Turn, player, gameId ,db}) => {
           </BoardItem>
         ))}
       </BoardContainer>
-    </>
+    </BoardWrapper>
   );
 };
 

@@ -9,7 +9,7 @@ const checkPlacement = (
     topSide,
     bottomSide
   ) => {
-    const checkLeftRight = id % 10 <= (id + rightSide) % 10 && id % 10 >= (id - leftSide) % 10 && (id - leftSide) >0 && (id + rightSide)<100;
+    const checkLeftRight = id % 10 <= (id + rightSide) % 10 && id % 10 >= (id - leftSide) % 10 && (id - leftSide) >=0 && (id + rightSide)<100;
     const checkTopBottom = topSide>=0 && bottomSide<100
     const checkSides = (item) => {
       let result = true;
@@ -28,14 +28,11 @@ const checkPlacement = (
     return checkList;
   };
  export const handleAddShip = (id, ship, data, player,db,gameId,setShips) => {
-    console.log(ship, 'ship')
     const modulesId = [];
     const rightSide = ship.size.slice(ship.selectedModule).length;
     const leftSide = ship.size.slice(0, ship.selectedModule - 1).length;
     const topSide=ship.size.slice(0, ship.selectedModule - 1).length*10
     const bottomSide=ship.size.slice(ship.selectedModule).length*10
-    console.log(topSide,'top Side')
-    console.log(bottomSide,'bottom Side')
     if (!ship.vertical) {
       for (let i = id - leftSide; i <= id + rightSide; i++) {
         modulesId.push(i);

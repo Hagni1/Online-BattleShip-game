@@ -2,12 +2,12 @@ import styled from "styled-components";
 import { useState, } from "react";
 import { useRouter } from "next/router";
 import { app } from './../firebase.tsx'
+import Select from 'react-select'
 import { getDatabase, ref, set, onValue } from "firebase/database";
 const InputNumber = styled.input`
   width:5vw;
   border: 3px solid black;
   `
-
   const Container = styled.div`
     width: 80%;
     margin: 0 10%;
@@ -22,7 +22,7 @@ const InputNumber = styled.input`
     width: 20vw;
     margin: 0.5em;
     border: 3px solid black;
-    border-radius: 5em;
+    border-radius: 2em;
     font-size: 2em;
     background-color: white;
     transition: 0.3s;
@@ -98,7 +98,10 @@ export default function Home() {
       setData(data);
     });
   }
-  
+
+  const options = []
+  Object.values(data).filter(item => item.Winner ? false : true).map(game => options.push({ value:game.id, label:game.id }))
+  // const options=(Object.values(data).filter(item=> item.Winner ? false:true)).map(game=> <option key={game.id}>{game.id}</option>)
   data === 0 && getData()
   return (
     <Container>
@@ -107,10 +110,10 @@ export default function Home() {
         <Button onClick={()=>handleCreateNewGame()}>Create new game</Button>
         <label>
           <p>
-          Enter game number:
-            <InputNumber value={inputValue} type="number" onChange={(e) => setInputValue(e.target.value)} max={Object.values(data).length-1} min={0} />
+          Select available games:
+            <Select options={options} onChange={option => setInputValue(option.value)}/>
           </p>
-          <Button onClick={()=> router.push(`/${inputValue}/player2`)}>Join an existing game</Button>
+          <Button onClick={()=> router.push(`/${inputValue}/player2`)}>Join selected game</Button>
         </label>
       </ButtonGroup>
     </Container>
