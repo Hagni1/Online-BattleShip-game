@@ -74,7 +74,6 @@ const PrepareGame = ({
   }
   
   const [vertical, setVertical] = useState(false);
-  console.log(playerReady)
   return (
     <BoardWrapper>
       <Header>

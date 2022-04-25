@@ -67,15 +67,13 @@ const Game = () => {
     });
   };
 
-  const handleCheckWinner = () => {
-    !winner &&
+    gameData &&!winner &&
       (Object.values(gameData.player1.enemyBoard).filter(
-        (item) => item.hit === true
+        (item) => item.ship === true
       ).length >= 17 && set(ref(db, `games/${gameId}/Winner`), "player1"),
       Object.values(gameData.player2.enemyBoard).filter(
-        (item) => item.hit === true
+        (item) => item.ship === true
       ).length >= 17 && set(ref(db, `games/${gameId}/Winner`), "player2"));
-  };
 
   const [ships, setShips] = useState(0);
   useEffect(() => {
@@ -84,8 +82,8 @@ const Game = () => {
       playerReady &&
       setInterval(() => {
         getGameData();
-        winner === 0 && handleCheckWinner();
-      }, 5000);
+      }, 1000);
+    
     return () => clearInterval(interval);
   }, [routerIsReady, playerReady]);
   return (

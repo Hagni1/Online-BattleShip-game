@@ -28,7 +28,7 @@ const InputNumber = styled.input`
     transition: 0.3s;
     &:hover {
       transition: 0.3s;
-      background-color: grey;
+      background-color:#999;
       cursor: pointer;
     }
   `;
@@ -112,11 +112,9 @@ export default function Home() {
       <h1>Ships Game</h1>
       <ButtonGroup>
         <Button onClick={()=>handleCreateNewGame()}>Create new game</Button>
-        <label>
-          <p>
+        <label>  
           Select available games:
             <Select options={options} onChange={option => setInputValue(option.value)}/>
-          </p>
           <Button onClick={()=>  inputValue !==0 && router.push(`/${inputValue}/player2`)}>Join selected game</Button>
         </label>
       </ButtonGroup>
